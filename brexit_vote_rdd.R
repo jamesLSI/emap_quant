@@ -1,8 +1,8 @@
-source("eurostat_data.R")
+source("get_data.R")
 library(plotly)
 
 ## plot data ####
-prc_hicp_labelled %>% 
+hicp_cpi_post_brexit %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
          indic == "HICP - All items excluding energy") %>%
   # filter(!str_detect(geo,
@@ -10,7 +10,7 @@ prc_hicp_labelled %>%
   mutate(geo = if_else(geo == "European Union (EU6-1958, EU9-1973, EU10-1981, EU12-1986, EU15-1995, EU25-2004, EU27-2007, EU28-2013, EU27-2020)",
                        "EU",
                        geo)) %>% 
-  filter(geo %in% c("Germany (until 1990 former territory of the FRG)",
+  filter(geo %in% c("Germany",
                     "United Kingdom",
                     "France",
                     "Italy",
@@ -26,7 +26,7 @@ prc_hicp_labelled %>%
          yaxis = list(title = ""))
 
 ## linear model diff slope ####
-lm_different_slope <- prc_hicp_labelled %>% 
+lm_different_slope <- hicp_cpi_post_brexit %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
          indic == "HICP - All items excluding energy") %>%
   filter(!str_detect(geo,
@@ -37,7 +37,7 @@ lm_different_slope <- prc_hicp_labelled %>%
 
 summary(lm_different_slope)
 
-prc_hicp_labelled %>% 
+hicp_cpi_post_brexit %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
          indic == "HICP - All items excluding energy") %>%
   filter(!str_detect(geo,
@@ -62,13 +62,13 @@ prc_hicp_labelled %>%
 
 ## linear model diff slope multiple countries ####
 
-lm_different_slope <- prc_hicp_labelled %>% 
+lm_different_slope <- hicp_cpi_post_brexit %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
          indic == "HICP - All items excluding energy") %>%
   filter(!str_detect(geo,
                      "Euro area|European Union")) %>% 
   filter(geo %in% c("United Kingdom",
-                    "Germany (until 1990 former territory of the FRG)",
+                    "Germany",
                     "France")) %>%
   mutate(state = if_else(geo == "United Kingdom",
                          1,
@@ -80,13 +80,14 @@ lm_different_slope <- prc_hicp_labelled %>%
 
 summary(lm_different_slope)
 
-prc_hicp_labelled %>% 
+hicp_cpi_post_brexit %>% 
+  filter(time > as.Date(ymd("1996-01-01"))) %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
          indic == "HICP - All items excluding energy") %>%
   filter(!str_detect(geo,
                      "Euro area|European Union")) %>% 
   filter(geo %in% c("United Kingdom",
-                    "Germany (until 1990 former territory of the FRG)",
+                    "Germany",
                     "France")) %>%
   select(time, values, geo) %>%
   mutate(state = as.factor(if_else(geo == "United Kingdom",
@@ -100,9 +101,9 @@ prc_hicp_labelled %>%
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   scale_color_brewer(palette = "Accent") +
-  guides(color = FALSE) +
-  geom_vline(xintercept = 21, color = "red",
-             size = 1, linetype = "dashed") +
+  guides(color = guide_legend(title="Country")) +
+  # geom_vline(xintercept = 21, color = "red",
+  #            size = 1, linetype = "dashed") +
   labs(title = "UK HICP Indexed at 2015 - All items excluding energy",
        subtitle = "RDD from Brexit vote 23rd June 2016",
        y = "",

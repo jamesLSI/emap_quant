@@ -6,3 +6,6 @@
 carpenter_dobkin_2009.dta
 rdd_copy.R
 uk_hicp_2015_rdd.png
+did_copy_models.R
+did_copy_data.R
+did_copy_visuals.R

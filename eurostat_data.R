@@ -1,5 +1,6 @@
 library(eurostat)
 library(tidyverse)
+library(magrittr)
 
 brexit_dates <- tibble(time = c(ymd("2016-06-23"),
                                 ymd("2017-3-29"),
@@ -16,7 +17,7 @@ brexit_dates <- tibble(time = c(ymd("2016-06-23"),
                                  "Officially leaves",
                                  "Tranisition ends"))
 
-tables <- get_eurostat_toc()
+# tables <- get_eurostat_toc()
 
 prc_hicp <- get_eurostat("ei_cphi_m")
 prc_hicp_labelled <- label_eurostat(prc_hicp)%>% 
