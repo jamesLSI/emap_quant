@@ -37,7 +37,7 @@ summary(did_model_all)
   filter(time == max(time)) %>% 
   summarise(mean = mean(values))
 
-f_mean_post <- hicp_cpi_post_brexit %>% 
+fg_mean_post <- hicp_cpi_post_brexit %>% 
   filter(geo %in% c("Germany",
                     "France")) %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
