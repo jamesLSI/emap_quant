@@ -1,16 +1,22 @@
 source("get_data.R")
 
-hicp_cpi_post_brexit %>% 
-  count(geo) %>% 
-  view()
-
 # common trend visual ####
+
+vline <- function(x = 45, color = "black") {
+  list(
+    type = "line",
+    x0 = x,
+    x1 = x,
+    yref = "paper",
+    y0 = 0,
+    y1 = 0.9,
+    line = list(color = color)
+  )
+}
+
 hicp_cpi_post_brexit %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
          indic == "HICP - All items excluding energy") %>%
-  mutate(geo = if_else(geo == "European Union (EU6-1958, EU9-1973, EU10-1981, EU12-1986, EU15-1995, EU25-2004, EU27-2007, EU28-2013, EU27-2020)",
-                       "EU",
-                       geo)) %>% 
   filter(geo %in% c("United Kingdom",
                     "Germany",
                     "France",
@@ -77,76 +83,29 @@ summary(did_model_all)
 
 
 
-## play on numbers
+## table ####
 
-{fg_mean_pre <- hicp_cpi_post_brexit %>% 
+diff_in_diff_table <- hicp_cpi_post_brexit %>% 
   filter(geo %in% c("Germany",
-                    "France")) %>% 
+                    "France",
+                    "United Kingdom",
+                    "EU",
+                    "Canada")) %>% 
   filter(unit == "Harmonized consumer price index, 2015=100",
          indic == "HICP - All items excluding energy") %>%
-  filter(time < brexit_dates$time[7]) %>% 
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))
+  mutate(brexit = if_else(time == (brexit_dates$time[7]-30),
+                          "Transition Ends",
+                          if_else(time == (brexit_dates$time[7]-30)+365,
+                                  "Transition plus 1",
+                                  "other"))) %>% 
+  filter(!brexit == "other") %>% 
+  select(geo,
+         values,
+         brexit) %>% 
+  pivot_wider(names_from = brexit,
+              values_from = values) %>% 
+  mutate(difference = `Transition plus 1` - `Transition Ends`)
 
-fg_mean_post <- hicp_cpi_post_brexit %>% 
-  filter(geo %in% c("Germany",
-                    "France")) %>% 
-  filter(unit == "Harmonized consumer price index, 2015=100",
-         indic == "HICP - All items excluding energy") %>%
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))
 
-f_pre <- hicp_cpi_post_brexit %>% 
-  filter(geo %in% c("France")) %>% 
-  filter(unit == "Harmonized consumer price index, 2015=100",
-       indic == "HICP - All items excluding energy") %>%
-  filter(time < brexit_dates$time[7]) %>% 
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))
-
-f_post <- hicp_cpi_post_brexit %>% 
-  filter(geo %in% c("France")) %>% 
-  filter(unit == "Harmonized consumer price index, 2015=100",
-         indic == "HICP - All items excluding energy") %>%
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))
-
-g_pre <- hicp_cpi_post_brexit %>% 
-  filter(geo %in% c("Germany")) %>% 
-  filter(unit == "Harmonized consumer price index, 2015=100",
-         indic == "HICP - All items excluding energy") %>%
-  filter(time < brexit_dates$time[7]) %>% 
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))
-
-g_post <- hicp_cpi_post_brexit %>% 
-  filter(geo %in% c("Germany")) %>% 
-  filter(unit == "Harmonized consumer price index, 2015=100",
-         indic == "HICP - All items excluding energy") %>%
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))
-
-uk_pre <- hicp_cpi_post_brexit %>% 
-  filter(geo %in% c("United Kingdom")) %>% 
-  filter(unit == "Harmonized consumer price index, 2015=100",
-         indic == "HICP - All items excluding energy") %>%
-  filter(time < brexit_dates$time[7]) %>% 
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))
-
-uk_post <- hicp_cpi_post_brexit %>% 
-  filter(geo %in% c("United Kingdom")) %>% 
-  filter(unit == "Harmonized consumer price index, 2015=100",
-         indic == "HICP - All items excluding energy") %>%
-  filter(time == max(time)) %>% 
-  summarise(mean = mean(values))}
-
-(uk_pre - uk_post)-(fg_mean_pre - fg_mean_post) 
-(uk_pre - fg_mean_pre)-(uk_post - fg_mean_post)
-
-(uk_pre - uk_post)-(f_pre - f_post) 
-(uk_pre - f_pre)-(uk_post - f_post)
-
-(uk_pre - uk_post)-(g_pre - g_post) 
-(uk_pre - g_pre)-(uk_post - g_post)
-
+diff_in_diff_table %>% 
+  write_csv("diff_in_diff_table.csv")

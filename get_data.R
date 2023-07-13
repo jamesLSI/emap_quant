@@ -107,9 +107,18 @@ hicp_cpi_post_brexit <- prc_hicp_labelled %>%
   mutate(geo = if_else(geo == "Germany (until 1990 former territory of the FRG)",
                        "Germany",
                        geo)) %>% 
+  mutate(geo = if_else(geo == "European Union (EU6-1958, EU9-1973, EU10-1981, EU12-1986, EU15-1995, EU25-2004, EU27-2007, EU28-2013, EU27-2020)",
+                       "EU",
+                       geo)) %>% 
   arrange(indic,
           time,
           geo)
+
+## ref ####
+
+## Statistics Canada. Table 18-10-0004-01  Consumer Price Index, monthly, not seasonally adjusted
+## https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7bt/mm23
+## https://ec.europa.eu/eurostat/databrowser/view/EI_CPHI_M/default/table?lang=en
 
 rm(cpi_all_uk,
    cpi_ex_energy_uk,
