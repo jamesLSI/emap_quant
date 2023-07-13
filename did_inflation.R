@@ -63,7 +63,8 @@ data <- hicp_cpi_post_brexit %>%
   ## dummy for UK or not
   mutate(treated = if_else(geo == "United Kingdom",
                            1,
-                           0))
+                           0)) %>% 
+  filter(time < brexit_dates$time[7]+366)
 
 # Fit DiD regression models ####
 ## effect of just being UK ####
