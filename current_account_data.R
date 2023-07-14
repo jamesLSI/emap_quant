@@ -212,14 +212,14 @@ curr_acc_combined <- curr_acc_eu %>%
 ## https://ec.europa.eu/eurostat/databrowser/view/ei_bpm6ca_q/default/table?lang=en
 
 ## remove objects to clean environment#### 
-rm(eur_usd,
-   bop_eu_labelled,
-   gbp_usd,
+rm(bop_eu_labelled,
    uk_bop_titles,
    uk_bop_raw,
-   cad_usd,
    canada_bop_titles,
    canada_bop_raw,
+   eur_usd,
+   cad_usd,
+   gbp_usd,
    curr_acc_eu,
    curr_acc_uk,
    curr_acc_canada)
