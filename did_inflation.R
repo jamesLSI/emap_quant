@@ -1,4 +1,5 @@
 source("get_data.R")
+source("current_account_data.R")
 
 # common trend visual ####
 
@@ -45,6 +46,14 @@ hicp_cpi_post_brexit %>%
 
 # generate data for model  ####
 data <- hicp_cpi_post_brexit %>% 
+  ## add in current account data in usd
+  left_join(curr_acc_combined %>% 
+              filter(str_detect(unit,
+                                "Million")) %>%
+              select(geo,
+                     bop_item,
+                     usd_values,
+                     time)) %>% 
   ## filter post 1996 to align values in various datasets
   filter(time > as.Date(ymd("1996-01-01"))) %>% 
   ## focus on CPI excluding energy
@@ -64,21 +73,28 @@ data <- hicp_cpi_post_brexit %>%
   mutate(treated = if_else(geo == "United Kingdom",
                            1,
                            0)) %>% 
-  filter(time < brexit_dates$time[7]+366)
+  ## filter out one year after transition and so avoid russian invasion of ukraine
+  filter(time < brexit_dates$time[7]+366) %>% 
+  ## optional control for only date with current account data
+  filter(!is.na(usd_values))
 
 # Fit DiD regression models ####
 ## effect of just being UK ####
 did_model_uk_only <- lm(values ~ treated, data = data)
+## effect added for current account balance ####
+did_model_uk_curr_acc <- lm(values ~ treated + usd_values, data = data)
 ## effect added of post transition period ####
-did_model_uk_brexit_date <- lm(values ~ treated + brexit_time, data = data)
+did_model_uk_curr_acc_brexit_date <- lm(values ~ treated + usd_values + brexit_time, data = data)
 ## effect added of being UK AND post transition period (interaction effect) ####
-did_model_all <- lm(values ~ treated + brexit_time + treated * brexit_time, data = data)
+did_model_all <- lm(values ~ treated + brexit_time + usd_values + treated * brexit_time, data = data)
 
 # Print model summaries ####
 ## effect of just being UK ####
 summary(did_model_uk_only)
+## effect added for current account balance ####
+summary(did_model_uk_curr_acc)
 ## effect added of post transition period ####
-summary(did_model_uk_brexit_date)
+summary(did_model_uk_curr_acc_brexit_date)
 ## effect added of being UK AND post transition period (interaction effect) ####
 summary(did_model_all)
 
