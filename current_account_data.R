@@ -42,7 +42,7 @@ curr_acc_eu <- bop_eu_labelled %>%
                        "EU",
                        geo)) %>% 
   left_join(eur_usd) %>% 
-  mutate(usd_values = if_else(unit == "Million euro",
+  mutate(usd_curr_acc_values = if_else(unit == "Million euro",
                               values * usd_eur_rate,
                               0))
 
@@ -115,7 +115,7 @@ curr_acc_uk <- uk_bop_raw %>%
          stk_flow = "Balance",
          geo = "United Kingdom") %>% 
   left_join(gbp_usd) %>% 
-  mutate(usd_values = if_else(unit == "Million sterling",
+  mutate(usd_curr_acc_values = if_else(unit == "Million sterling",
                               values * usd_gbp_rate,
                               0))
 
@@ -194,16 +194,35 @@ curr_acc_canada <- canada_bop_raw %>%
          bop_item = "Current account",
          geo = "Canada") %>% 
   left_join(cad_usd) %>% 
-  mutate(usd_values = if_else(unit == "Million dollar",
+  mutate(usd_curr_acc_values = if_else(unit == "Million dollar",
                               values * usd_cad_rate,
                               0))
 
 
 ## combine files ####
 
-curr_acc_combined <- curr_acc_eu %>% 
+curr_acc_combined_pre <- curr_acc_eu %>% 
   bind_rows(curr_acc_uk) %>% 
-  bind_rows(curr_acc_canada)
+  bind_rows(curr_acc_canada) %>% 
+  rowwise() %>% 
+  mutate(usd_rate = max(usd_eur_rate,
+                        usd_gbp_rate,
+                        usd_cad_rate,
+                        na.rm = T)) %>% 
+  ungroup()
+
+usd_2015 <- curr_acc_combined_pre %>% 
+  filter(str_detect(unit,
+                    "Million")) %>% 
+  group_by(geo) %>% 
+  filter(time == dmy("01-01-2015")) %>% 
+  select(geo,
+         usd_rate_2015 = usd_rate)
+
+curr_acc_combined <- curr_acc_combined_pre %>% 
+  left_join(usd_2015) %>% 
+  group_by(geo) %>% 
+  mutate(usd_rate_base_2015 = (usd_rate / usd_rate_2015)*100)
 
 ## refs ####
 
@@ -220,9 +239,11 @@ rm(bop_eu_labelled,
    eur_usd,
    cad_usd,
    gbp_usd,
+   usd_2015,
    curr_acc_eu,
    curr_acc_uk,
-   curr_acc_canada)
+   curr_acc_canada,
+   curr_acc_combined_pre)
 
 
 

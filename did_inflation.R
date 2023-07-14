@@ -1,5 +1,6 @@
 source("get_data.R")
 source("current_account_data.R")
+library(plotly)
 
 # common trend visual ####
 
@@ -50,16 +51,12 @@ data <- hicp_cpi_post_brexit %>%
   left_join(curr_acc_combined %>% 
               filter(str_detect(unit,
                                 "Million")) %>%
-              rowwise() %>% 
-              mutate(usd_rate = max(usd_eur_rate,
-                                    usd_gbp_rate,
-                                    usd_cad_rate,
-                                    na.rm = T)) %>% 
               select(geo,
                      bop_item,
-                     usd_values,
+                     usd_curr_acc_values,
                      time,
-                     usd_rate)) %>% 
+                     usd_rate,
+                     usd_rate_base_2015)) %>% 
   ## filter post 1996 to align values in various datasets
   filter(time > as.Date(ymd("1996-01-01"))) %>% 
   ## focus on CPI excluding energy
@@ -86,13 +83,13 @@ data <- hicp_cpi_post_brexit %>%
 ## effect of just being UK ####
 did_model_uk_only <- lm(values ~ treated, data = data)
 ## effect added for current account balance ####
-did_model_uk_curr_acc <- lm(values ~ treated + usd_values, data = data)
+did_model_uk_curr_acc <- lm(values ~ treated + usd_curr_acc_values, data = data)
 ## effect added of usd rate
-did_model_uk_curr_acc_usd <- lm(values ~ treated + usd_values + usd_rate, data = data)
+did_model_uk_curr_acc_usd <- lm(values ~ treated + usd_curr_acc_values + usd_rate_base_2015, data = data)
 ## effect added of post transition period ####
-did_model_uk_curr_acc_usd_brexit_date <- lm(values ~ treated + usd_values + usd_rate + brexit_time, data = data)
+did_model_uk_curr_acc_usd_brexit_date <- lm(values ~ treated + usd_curr_acc_values + usd_rate_base_2015 + brexit_time, data = data)
 ## effect added of being UK AND post transition period (interaction effect) ####
-did_model_all <- lm(values ~ treated + usd_values + usd_rate + brexit_time + treated * brexit_time, data = data)
+did_model_all <- lm(values ~ treated + usd_curr_acc_values + usd_rate_base_2015 + brexit_time + treated * brexit_time, data = data)
 
 # Print model summaries ####
 ## effect of just being UK ####
