@@ -116,7 +116,7 @@ hicp_cpi_post_brexit <- prc_hicp_labelled %>%
 
 ## ref ####
 
-## Statistics Canada. Table 18-10-0004-01  Consumer Price Index, monthly, not seasonally adjusted
+## Statistics Canada. Table 18-10-0004-01  Consumer Price Index, monthly, not seasonally adjusted https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401
 ## https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7bt/mm23
 ## https://ec.europa.eu/eurostat/databrowser/view/EI_CPHI_M/default/table?lang=en
 

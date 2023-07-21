@@ -77,23 +77,38 @@ data <- hicp_cpi_post_brexit %>%
                            1,
                            0)) %>% 
   ## filter out one year after transition and so avoid russian invasion of ukraine
-  filter(time < brexit_dates$time[7]+366)
+  filter(time < brexit_dates$time[7]+366) #%>% 
+  # filter(time > brexit_dates$time[7]-366)
+
+data %>% 
+  summarise(min = min(time),
+            max = max(time))
 
 # Fit DiD regression models ####
 ## effect of just being UK ####
 did_model_uk_only <- lm(values ~ treated, data = data)
+## effect of just being UK + post ####
+did_model_uk_post <- lm(values ~ treated + brexit_time, data = data)
+## effect of just being UK + post + interaction ####
+did_model_uk_post_interact <- lm(values ~ treated + brexit_time + treated * brexit_time, data = data)
 ## effect added for current account balance ####
 did_model_uk_curr_acc <- lm(values ~ treated + usd_curr_acc_values, data = data)
 ## effect added of usd rate
 did_model_uk_curr_acc_usd <- lm(values ~ treated + usd_curr_acc_values + usd_rate_base_2015, data = data)
 ## effect added of post transition period ####
-did_model_uk_curr_acc_usd_brexit_date <- lm(values ~ treated + usd_curr_acc_values + usd_rate_base_2015 + brexit_time, data = data)
+did_model_uk_curr_acc_usd_brexit_date <- lm(values ~ treated + usd_curr_acc_values + usd_rate_base_2015 + brexit_time , data = data)
 ## effect added of being UK AND post transition period (interaction effect) ####
 did_model_all <- lm(values ~ treated + usd_curr_acc_values + usd_rate_base_2015 + brexit_time + treated * brexit_time, data = data)
 
+options(digits=10,
+        maxsum = 10)
 # Print model summaries ####
 ## effect of just being UK ####
 summary(did_model_uk_only)
+## effect of just being UK + post ####
+summary(did_model_uk_post)
+## effect of just being UK + post + interaction ####
+summary(did_model_uk_post_interact)
 ## effect added for current account balance ####
 summary(did_model_uk_curr_acc)
 ## effect added of used rate
@@ -102,8 +117,6 @@ summary(did_model_uk_curr_acc_usd)
 summary(did_model_uk_curr_acc_usd_brexit_date)
 ## effect added of being UK AND post transition period (interaction effect) ####
 summary(did_model_all)
-
-
 
 ## table ####
 

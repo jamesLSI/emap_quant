@@ -226,7 +226,7 @@ curr_acc_combined <- curr_acc_combined_pre %>%
 
 ## refs ####
 
-## Table 36-10-0014-01  Balance of international payments, current account and capital account, annual (x 1,000,000)
+## https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3610001401 Table 36-10-0014-01  Balance of international payments, current account and capital account, annual (x 1,000,000)
 ## https://www.ons.gov.uk/economy/nationalaccounts/balanceofpayments/datasets/balanceofpayments
 ## https://ec.europa.eu/eurostat/databrowser/view/ei_bpm6ca_q/default/table?lang=en
 
