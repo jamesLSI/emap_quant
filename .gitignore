@@ -11,3 +11,10 @@ did_copy_data.R
 did_copy_visuals.R
 data_raw
 outputs
+did_model_all.csv
+did_model_uk_curr_acc.csv
+did_model_uk_curr_acc_usd.csv
+did_model_uk_curr_acc_usd_brexit_date.csv
+did_model_uk_only.csv
+did_model_uk_post.csv
+did_model_uk_post_interact.csv

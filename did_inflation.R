@@ -1,6 +1,5 @@
 source("get_data.R")
 source("current_account_data.R")
-library(plotly)
 
 # common trend visual ####
 
@@ -117,6 +116,44 @@ summary(did_model_uk_curr_acc_usd)
 summary(did_model_uk_curr_acc_usd_brexit_date)
 ## effect added of being UK AND post transition period (interaction effect) ####
 summary(did_model_all)
+
+{# save model summaries ####
+## effect of just being UK ####
+summary(did_model_uk_only) %>% 
+  lm_summary_table_function() %>% 
+  rename("did_model_uk_only" = value) %>% 
+  write_csv(paste0("outputs/did_model_uk_only",".csv"))
+## effect of just being UK + post ####
+summary(did_model_uk_post) %>% 
+  lm_summary_table_function() %>% 
+  rename("did_model_uk_post" = value) %>% 
+  write_csv(paste0("outputs/did_model_uk_post",".csv"))
+## effect of just being UK + post + interaction ####
+summary(did_model_uk_post_interact) %>% 
+  lm_summary_table_function() %>% 
+  rename("did_model_uk_post_interact" = value) %>% 
+  write_csv(paste0("outputs/did_model_uk_post_interact",".csv"))
+## effect added for current account balance ####
+summary(did_model_uk_curr_acc) %>% 
+  lm_summary_table_function() %>% 
+  rename("did_model_uk_curr_acc" = value) %>% 
+  write_csv(paste0("outputs/did_model_uk_curr_acc",".csv"))
+## effect added of used rate
+summary(did_model_uk_curr_acc_usd) %>% 
+  lm_summary_table_function() %>% 
+  rename("did_model_uk_curr_acc_usd" = value) %>% 
+  write_csv(paste0("outputs/did_model_uk_curr_acc_usd",".csv"))
+## effect added of post transition period ####
+summary(did_model_uk_curr_acc_usd_brexit_date) %>% 
+  lm_summary_table_function() %>% 
+  rename("did_model_uk_curr_acc_usd_brexit_date" = value) %>% 
+  write_csv(paste0("outputs/did_model_uk_curr_acc_usd_brexit_date",".csv"))
+## effect added of being UK AND post transition period (interaction effect) ####
+summary(did_model_all) %>% 
+  lm_summary_table_function() %>% 
+  rename("did_model_all" = value) %>% 
+  write_csv(paste0("outputs/did_model_all",".csv"))
+}
 
 ## table ####
 
