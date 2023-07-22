@@ -71,7 +71,8 @@ lm_summary_table_function <- function(summary_table){
     select(-name) %>% 
     bind_rows(tibble("variable" = "Adjust R Squared",
                      "value" = as.character(summary_table$adj.r.squared)))
-  
+    select(-name)
+
   
   return(output)
   
