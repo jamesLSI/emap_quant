@@ -1,6 +1,4 @@
-library(eurostat)
-library(tidyverse)
-library(magrittr)
+source("functions.R")
 
 brexit_dates <- tibble(time = c(ymd("2016-06-23"),
                                 ymd("2017-3-29"),
