@@ -47,6 +47,8 @@ lm_different_slope <- hicp_cpi_post_brexit %>%
   filter(!str_detect(geo,
                      "Euro area|European Union")) %>% 
   filter(geo == "United Kingdom") %>%
+  filter(time > dmy("31-12-2011")) %>% 
+  filter(time < brexit_dates$time[[7]]) %>% 
   mutate(threshold = ifelse(time > brexit_dates$time[1], 1, 0)) %$%
   lm(values ~ threshold + I(time - brexit_dates$time[1]) + threshold:I(time - brexit_dates$time[1]))
 
@@ -59,6 +61,8 @@ hicp_cpi_post_brexit %>%
                      "Euro area|European Union")) %>% 
   filter(geo == "United Kingdom") %>%
   select(time, values) %>%
+  filter(time > dmy("31-12-2011")) %>% 
+  filter(time < brexit_dates$time[[7]]) %>% 
   mutate(threshold = as.factor(ifelse(time > brexit_dates$time[1], 1, 0))) %>% 
   # mutate(values = as.factor(values)) %>% 
   ggplot(aes(x = time, y = values, color = threshold)) +
@@ -68,7 +72,7 @@ hicp_cpi_post_brexit %>%
   guides(color = FALSE) +
   geom_vline(xintercept = 21, color = "red",
              size = 1, linetype = "dashed") +
-  labs(title = "UK HICP Indexed at 2015 - All items excluding energy",
+  labs(title = "UK CPI Indexed at 2015 - All items excluding energy",
        subtitle = "RDD from Brexit vote 23rd June 2016",
        y = "",
        x = "")
